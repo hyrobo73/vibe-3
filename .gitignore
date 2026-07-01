@@ -1,0 +1,28 @@
+# Dependencies
+frontend/node_modules/
+backend/.venv/
+
+# Build outputs
+frontend/dist/
+
+# Runtime data
+backend/data/app.sqlite3
+backend/data/uploads/*
+backend/data/exports/*
+!backend/data/uploads/.gitkeep
+!backend/data/exports/.gitkeep
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Logs
+*.log
+
+# Local env
+.env
+.env.*
+# Local Codex configuration
+.codex/
+skills/
