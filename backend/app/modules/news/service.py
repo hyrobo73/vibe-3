@@ -12,8 +12,9 @@ from app.db.connection import get_connection
 
 BASE_URL = "https://www.korea.kr"
 LIST_URL = f"{BASE_URL}/news/policyNewsList.do"
-KEYWORDS = "정책뉴스"
+KEYWORDS = "?筌먦끉???怨룸츩"
 MAX_PAGES = 50
+DIRECT_OPENER = urllib.request.build_opener(urllib.request.ProxyHandler({}))
 
 
 @dataclass
@@ -79,7 +80,7 @@ def fetch_policy_news_list(target_date: str, page_index: int) -> str:
         },
         method="POST",
     )
-    with urllib.request.urlopen(request, timeout=20) as response:
+    with DIRECT_OPENER.open(request, timeout=20) as response:
         return response.read().decode("utf-8", errors="replace")
 
 

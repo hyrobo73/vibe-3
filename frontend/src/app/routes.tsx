@@ -6,26 +6,26 @@ import { SchedulePage } from "../features/schedule/SchedulePage";
 export const routes = [
   {
     id: "schedule",
-    label: "일정",
+    label: "일정 관리",
     description: "팀원 등록과 주간/월간 일정을 관리합니다.",
     component: SchedulePage,
   },
   {
     id: "excel",
     label: "엑셀 자동화",
-    description: "분리, 병합 작업의 업로드와 처리 상태를 다룹니다.",
+    description: "분리, 병합 작업을 업로드하고 처리 결과를 다운로드합니다.",
     component: ExcelAutomationPage,
   },
   {
     id: "complaints",
     label: "민원 챗봇",
-    description: "매뉴얼 기반 답변 초안 생성을 다룹니다.",
+    description: "매뉴얼 기반 답변 초안 생성을 준비합니다.",
     component: ComplaintChatbotPage,
   },
   {
     id: "news",
-    label: "뉴스",
-    description: "공공행정 뉴스 수집 결과를 다룹니다.",
+    label: "정책 뉴스",
+    description: "정책 뉴스 수집 결과를 확인합니다.",
     component: NewsPage,
   },
 ] as const;

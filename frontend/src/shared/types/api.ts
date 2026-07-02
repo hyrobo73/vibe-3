@@ -61,3 +61,16 @@ export type NewsCollectResult = {
   skipped: number;
   total: number;
 };
+export type ExcelColumnsResponse = {
+  filename: string;
+  columns: string[];
+};
+
+export type ExcelJob = {
+  id: number;
+  job_type: "split" | "merge";
+  status: "processing" | "done" | "failed";
+  error_message: string | null;
+  created_at: string;
+  download_url: string | null;
+};

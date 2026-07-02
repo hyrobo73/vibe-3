@@ -1,11 +1,12 @@
 type JsonBody = Record<string, unknown>;
 
 async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
+  const isFormData = options.body instanceof FormData;
   const response = await fetch(path, {
     ...options,
     headers: {
       Accept: "application/json",
-      ...(options.body ? { "Content-Type": "application/json" } : {}),
+      ...(options.body && !isFormData ? { "Content-Type": "application/json" } : {}),
       ...options.headers,
     },
   });
@@ -34,6 +35,13 @@ export function apiPost<T>(path: string, body: JsonBody): Promise<T> {
   return request<T>(path, {
     method: "POST",
     body: JSON.stringify(body),
+  });
+}
+
+export function apiFormPost<T>(path: string, body: FormData): Promise<T> {
+  return request<T>(path, {
+    method: "POST",
+    body,
   });
 }
 

@@ -1,27 +1,37 @@
-# Architecture: 공공직군 행정업무 슈퍼앱
+﻿# Architecture: Public Admin RPA Hub
 
 ## 1. 기술 스택
 
 | 영역 | 기술 |
 | --- | --- |
-| Frontend | TypeScript, Vite, React |
+| Frontend | React, TypeScript, Vite |
 | Backend | Python, FastAPI, uv |
 | Database | SQLite |
-| Package Manager | npm, uv |
-| 문서 | Markdown, HTML |
+| 파일 처리 | pandas, openpyxl |
+| 뉴스 수집 | requests 계열 대신 표준 라이브러리 + BeautifulSoup |
 
-## 2. 전체 구조
+## 2. 저장소 구조
 
 ```text
-day3_rpa/
+.
+  package.json
   frontend/
     package.json
-    package-lock.json
-    node_modules/
+    src/
+      app/
+      features/
+      shared/
   backend/
     pyproject.toml
-    uv.lock
-    .venv/
+    app/
+      core/
+      db/
+      modules/
+      schemas/
+      services/
+    data/
+      uploads/
+      exports/
   docs/
     PRD.md
     Architecture.md
@@ -29,254 +39,219 @@ day3_rpa/
     index.html
 ```
 
-## 3. 권장 프로젝트 구조
-
-아래 구조는 구현 단계에서 확장할 기준 구조다.
-
-```text
-frontend/
-  src/
-    app/
-      App.tsx
-      routes.tsx
-    features/
-      schedule/
-      excel-automation/
-      complaint-chatbot/
-      news/
-    shared/
-      api/
-      components/
-      hooks/
-      styles/
-      types/
-
-backend/
-  app/
-    main.py
-    core/
-      config.py
-      security.py
-      logging.py
-    db/
-      connection.py
-      migrations/
-    modules/
-      schedules/
-      excel_jobs/
-      complaints/
-      news/
-      audit/
-    schemas/
-    services/
-    tests/
-  data/
-    app.sqlite3
-    uploads/
-    exports/
-```
-
-## 4. 시스템 구성
+## 3. 런타임 구조
 
 ```text
 [React SPA]
     |
     | HTTP/JSON, file upload/download
     v
-[FastAPI Backend]
+[FastAPI API]
     |
-    | SQL
+    | SQLite
     v
-[SQLite]
+[backend/data/app.sqlite3]
 
-[FastAPI Background Jobs]
-    |-- 뉴스 수집
-    |-- 엑셀 처리
-    |-- 매뉴얼 인덱싱
+[FastAPI startup]
+    |-- DB 초기화
+    |-- 뉴스 자동 수집 스케줄러 시작
 ```
 
-## 5. 모듈별 역할
+## 4. 프런트엔드 구조
 
-### 5.1 Frontend
+### `src/app`
 
-#### app
+- 라우트 목록과 앱 레이아웃을 관리한다.
+- 시작 시 `/api/health`와 `/api/system/status`를 호출해 상태를 보여준다.
 
-- 라우팅과 전역 레이아웃을 관리한다.
-- 사용자 인증 상태와 공통 에러 화면을 처리한다.
+### `src/features/schedule`
 
-#### features/schedule
+- 팀원과 일정 CRUD 화면을 제공한다.
+- 주간 / 월간 뷰를 전환한다.
 
-- 팀원 일정 캘린더 화면을 제공한다.
-- 일정 등록, 수정, 삭제, 필터 기능을 담당한다.
+### `src/features/excel-automation`
 
-#### features/excel-automation
+- 파일 업로드, 열 선택, split / merge 작업 실행을 담당한다.
+- 작업 결과와 다운로드 링크를 표시한다.
 
-- 엑셀 파일 업로드 UI를 제공한다.
-- 컬럼 선택, 분리/병합 옵션, 결과 다운로드를 담당한다.
+### `src/features/news`
 
-#### features/complaint-chatbot
+- 지정 날짜의 정책 뉴스 목록과 수집 실행 UI를 제공한다.
 
-- 민원 입력, 매뉴얼 첨부, 챗봇 응답 화면을 제공한다.
-- 답변 근거 문서와 주의 문구를 표시한다.
+### `src/features/complaint-chatbot`
 
-#### features/news
+- 현재는 자리표시 패널이다.
 
-- 수집된 뉴스 목록과 날짜/키워드 필터를 제공한다.
-- 기사 링크, 요약, 관련 키워드를 표시한다.
+### `src/shared`
 
-#### shared
+- API 클라이언트
+- 공통 타입
+- 공통 스타일과 재사용 컴포넌트
 
-- API 클라이언트, 공통 UI 컴포넌트, 공통 타입을 관리한다.
+## 5. 백엔드 구조
 
-### 5.2 Backend
+### `app/main.py`
 
-#### core
+- FastAPI 애플리케이션 생성
+- CORS 설정
+- 라우터 등록
+- DB 초기화 및 뉴스 스케줄러 시작
 
-- 환경 설정, 보안, 로깅, 공통 예외 처리를 담당한다.
+### `app/core`
 
-#### db
+- `config.py`: 앱 이름, 데이터 디렉터리, DB 경로, CORS 허용 오리진
+- `logging.py`: 로깅 설정
+- `security.py`: 보안 관련 유틸리티
 
-- SQLite 연결과 트랜잭션을 관리한다.
-- 초기 단계에서는 SQLite 파일 기반 저장소를 사용한다.
+### `app/db`
 
-#### modules/schedules
+- SQLite 연결과 초기화 로직
+- 테이블 생성 및 샘플 데이터 시드
 
-- 일정 CRUD API를 제공한다.
-- 일정 유형, 승인 상태, 사용자별 조회 조건을 처리한다.
+### `app/modules/team_members`
 
-#### modules/excel_jobs
+- 팀원 CRUD
+- 비활성화 기반 삭제 처리
 
-- 엑셀 업로드, 분리, 병합, 결과 파일 생성을 담당한다.
-- 구현 시 `openpyxl` 또는 `pandas` 사용을 검토한다.
+### `app/modules/schedules`
 
-#### modules/complaints
+- 일정 CRUD
+- 활성 팀원 검증
+- 시작/종료 시각 검증
+- 팀원명 조인을 포함한 조회
 
-- 민원 매뉴얼 업로드와 질의응답 처리를 담당한다.
-- 답변 생성 시 참조 문서와 근거를 함께 반환한다.
+### `app/modules/excel_jobs`
 
-#### modules/news
+- `.xlsx` 헤더 읽기
+- split / merge 작업 수행
+- 작업 상태와 다운로드 제공
 
-- 뉴스 수집 키워드 관리와 수집 결과 저장을 담당한다.
-- 매일 아침 실행되는 백그라운드 작업으로 확장한다.
+### `app/modules/news`
 
-#### modules/audit
+- 정책 뉴스 수집 서비스
+- 수집 API
+- 일일 자동 수집 스케줄러
 
-- 주요 사용자 행위와 시스템 이벤트를 기록한다.
-- 개인정보가 로그에 남지 않도록 필터링한다.
+### `app/modules/complaints`, `app/modules/audit`
 
-## 6. 데이터 모델 초안
+- 현재는 구조만 준비된 상태다.
 
-### users
+## 6. 데이터 모델
+
+### `team_members`
 
 | 컬럼 | 설명 |
 | --- | --- |
-| id | 사용자 ID |
+| id | 팀원 ID |
 | name | 이름 |
-| email | 이메일 |
-| role | 역할 |
 | department | 부서 |
-| created_at | 생성일시 |
+| position | 직책 |
+| email | 이메일 |
+| active | 활성 여부 |
+| created_at | 생성 시각 |
+| updated_at | 수정 시각 |
 
-### schedules
+### `schedules`
 
 | 컬럼 | 설명 |
 | --- | --- |
 | id | 일정 ID |
-| user_id | 작성자 |
-| type | 휴가, 근무, 출장, 교육, 기타 |
+| user_id | 사용자 ID 기본값 |
+| member_id | 담당 팀원 ID |
+| type | 일정 유형 |
 | title | 제목 |
-| starts_at | 시작일시 |
-| ends_at | 종료일시 |
+| starts_at | 시작 시각 |
+| ends_at | 종료 시각 |
 | location | 장소 |
+| memo | 메모 |
 | visibility | 공개 범위 |
 | approval_status | 승인 상태 |
+| created_at | 생성 시각 |
+| updated_at | 수정 시각 |
 
-### excel_jobs
+### `excel_jobs`
 
 | 컬럼 | 설명 |
 | --- | --- |
 | id | 작업 ID |
-| user_id | 요청자 |
-| job_type | split 또는 merge |
-| status | pending, processing, done, failed |
+| user_id | 사용자 ID 기본값 |
+| job_type | `split` 또는 `merge` |
+| status | `processing`, `done`, `failed` |
 | input_path | 입력 파일 경로 |
 | output_path | 결과 파일 경로 |
 | error_message | 오류 메시지 |
-| created_at | 생성일시 |
+| created_at | 생성 시각 |
 
-### complaint_manuals
-
-| 컬럼 | 설명 |
-| --- | --- |
-| id | 매뉴얼 ID |
-| title | 매뉴얼명 |
-| file_path | 파일 경로 |
-| uploaded_by | 업로드 사용자 |
-| created_at | 생성일시 |
-
-### complaint_chats
+### `news_articles`
 
 | 컬럼 | 설명 |
 | --- | --- |
-| id | 대화 ID |
-| user_id | 사용자 |
-| question | 민원 내용 |
-| answer | 응답 초안 |
-| references | 참조 문서 |
-| created_at | 생성일시 |
-
-### news_articles
-
-| 컬럼 | 설명 |
-| --- | --- |
-| id | 기사 ID |
+| id | 뉴스 ID |
 | title | 제목 |
-| source | 언론사 |
-| published_at | 발행일 |
-| url | 기사 URL |
+| source | 출처 |
+| published_at | 게시일 |
+| url | 원문 URL |
 | summary | 요약 |
-| keywords | 관련 키워드 |
-| collected_at | 수집일시 |
+| keywords | 키워드 |
+| collected_at | 수집 시각 |
 
-### audit_logs
+### `complaint_manuals`, `complaint_chats`, `audit_logs`
 
-| 컬럼 | 설명 |
-| --- | --- |
-| id | 로그 ID |
-| user_id | 사용자 |
-| action | 행위 |
-| resource_type | 대상 유형 |
-| resource_id | 대상 ID |
-| created_at | 생성일시 |
+- 테이블은 생성되지만 아직 UI와 API가 완성되지 않았다.
 
-## 7. API 설계 초안
+## 7. API 개요
+
+### 상태
+
+| Method | Path | 설명 |
+| --- | --- | --- |
+| GET | `/api/health` | API 상태 확인 |
+| GET | `/api/system/status` | API, DB, 기능 목록 확인 |
+
+### 팀원
+
+| Method | Path | 설명 |
+| --- | --- | --- |
+| GET | `/api/team-members` | 활성 팀원 목록 |
+| POST | `/api/team-members` | 팀원 생성 |
+| PATCH | `/api/team-members/{member_id}` | 팀원 수정 |
+| DELETE | `/api/team-members/{member_id}` | 팀원 비활성화 |
+
+### 일정
 
 | Method | Path | 설명 |
 | --- | --- | --- |
 | GET | `/api/schedules` | 일정 목록 조회 |
 | POST | `/api/schedules` | 일정 생성 |
-| PATCH | `/api/schedules/{id}` | 일정 수정 |
-| DELETE | `/api/schedules/{id}` | 일정 삭제 |
-| POST | `/api/excel/split` | 엑셀 분리 작업 생성 |
-| POST | `/api/excel/merge` | 엑셀 병합 작업 생성 |
-| GET | `/api/excel/jobs/{id}` | 엑셀 작업 상태 조회 |
-| GET | `/api/excel/jobs/{id}/download` | 결과 파일 다운로드 |
-| POST | `/api/complaints/manuals` | 민원 매뉴얼 업로드 |
-| POST | `/api/complaints/chat` | 민원 대응 초안 생성 |
+| PATCH | `/api/schedules/{schedule_id}` | 일정 수정 |
+| DELETE | `/api/schedules/{schedule_id}` | 일정 삭제 |
+
+### 엑셀
+
+| Method | Path | 설명 |
+| --- | --- | --- |
+| POST | `/api/excel/columns` | 첫 시트 헤더 조회 |
+| POST | `/api/excel/split` | 열 기준 분리 작업 생성 |
+| POST | `/api/excel/merge` | 파일 병합 작업 생성 |
+| GET | `/api/excel/jobs/{job_id}` | 작업 상태 조회 |
+| GET | `/api/excel/jobs/{job_id}/download` | 결과 파일 다운로드 |
+
+### 뉴스
+
+| Method | Path | 설명 |
+| --- | --- | --- |
 | GET | `/api/news` | 뉴스 목록 조회 |
-| POST | `/api/news/collect` | 뉴스 수집 수동 실행 |
+| POST | `/api/news/collect` | 지정 날짜 뉴스 수집 |
 
-## 8. SQLite 사용 기준
+## 8. 동작 특성
 
-- 개발 및 MVP 단계에서는 SQLite를 기본 DB로 사용한다.
-- DB 파일은 `backend/data/app.sqlite3`에 둔다.
-- 동시 쓰기 요청이 많아지면 PostgreSQL 전환을 검토한다.
-- 파일 업로드 원본과 결과물은 DB에 직접 저장하지 않고 파일 경로만 저장한다.
+- 앱 시작 시 SQLite 파일이 없으면 생성한다.
+- 일정과 엑셀 결과 파일은 `backend/data/uploads`, `backend/data/exports` 아래에 저장한다.
+- 뉴스 자동 수집은 매일 오전 9시 KST에 전날 기준으로 시도한다.
+- 정책 뉴스 수집은 외부 사이트 HTML 구조에 의존한다.
 
-## 9. 보안 고려사항
+## 9. 현재 구현의 경계
 
-- 모든 API는 인증 이후 접근하는 것을 원칙으로 한다.
-- 역할 기반 권한 검사를 API 레벨에서 수행한다.
-- 파일 업로드 시 확장자, MIME 타입, 파일 크기를 검증한다.
-- 민원 매뉴얼과 챗봇 입력에는 개인정보가 포함될 수 있으므로 로그에 원문 저장을 제한한다.
-- 뉴스 기사 전문을 무단 저장하지 않고 URL과 요약 중심으로 저장한다.
+- 인증, 권한, 감사 로그 조회 화면은 아직 없다.
+- 민원 챗봇은 프런트엔드 자리표시 단계다.
+- 운영용 배포 설정은 포함하지 않는다.

@@ -5,6 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import settings
 from app.db.connection import init_db, ping_db
+from app.modules.excel_jobs.router import router as excel_jobs_router
 from app.modules.news.router import router as news_router
 from app.modules.news.scheduler import run_daily_news_collector
 from app.modules.schedules.router import router as schedules_router
@@ -23,6 +24,7 @@ app.add_middleware(
 app.include_router(team_members_router, prefix="/api")
 app.include_router(schedules_router, prefix="/api")
 app.include_router(news_router, prefix="/api")
+app.include_router(excel_jobs_router, prefix="/api")
 
 
 @app.on_event("startup")

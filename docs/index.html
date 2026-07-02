@@ -1,16 +1,16 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="ko">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>공공직군 행정업무 슈퍼앱 문서</title>
+    <title>Public Admin RPA Hub 문서</title>
     <style>
       :root {
-        --bg: #f5f1e8;
-        --ink: #17211c;
-        --muted: #67736d;
-        --line: #d8ccba;
-        --card: #fffaf0;
+        --bg: #f4f1e8;
+        --ink: #18211d;
+        --muted: #66726d;
+        --line: #d9cfbf;
+        --card: #fffaf2;
         --blue: #245b73;
         --green: #2f6b4f;
         --gold: #b98022;
@@ -25,13 +25,11 @@
         margin: 0;
         color: var(--ink);
         font-family: "Segoe UI", "Malgun Gothic", sans-serif;
-        background:
-          radial-gradient(circle at top left, rgba(185, 128, 34, 0.22), transparent 34rem),
-          linear-gradient(135deg, #f8f4ea 0%, #eee5d6 50%, #f6efe2 100%);
+        background: linear-gradient(135deg, #f8f4ea 0%, #eee5d6 52%, #f6efe2 100%);
       }
 
       header {
-        padding: 56px 7vw 36px;
+        padding: 56px 7vw 34px;
         border-bottom: 1px solid var(--line);
       }
 
@@ -49,12 +47,11 @@
         margin: 0;
         font-size: clamp(34px, 6vw, 72px);
         line-height: 0.98;
-        letter-spacing: -0.05em;
       }
 
       .lead {
         max-width: 760px;
-        margin: 24px 0 0;
+        margin: 22px 0 0;
         color: var(--muted);
         font-size: 18px;
         line-height: 1.7;
@@ -73,31 +70,19 @@
       .card {
         padding: 24px;
         border: 1px solid var(--line);
-        border-radius: 24px;
-        background: rgba(255, 250, 240, 0.82);
+        border-radius: 20px;
+        background: rgba(255, 250, 242, 0.9);
         box-shadow: 0 18px 48px rgba(75, 55, 30, 0.08);
       }
 
-      .span-7 {
-        grid-column: span 7;
-      }
-
-      .span-5 {
-        grid-column: span 5;
-      }
-
-      .span-4 {
-        grid-column: span 4;
-      }
-
-      .span-6 {
-        grid-column: span 6;
-      }
+      .span-7 { grid-column: span 7; }
+      .span-5 { grid-column: span 5; }
+      .span-4 { grid-column: span 4; }
+      .span-6 { grid-column: span 6; }
 
       h2 {
         margin: 0 0 16px;
         font-size: 24px;
-        letter-spacing: -0.03em;
       }
 
       h3 {
@@ -138,21 +123,10 @@
         font-weight: 800;
       }
 
-      .tag.blue {
-        background: var(--blue);
-      }
-
-      .tag.green {
-        background: var(--green);
-      }
-
-      .tag.gold {
-        background: var(--gold);
-      }
-
-      .tag.red {
-        background: var(--red);
-      }
+      .tag.blue { background: var(--blue); }
+      .tag.green { background: var(--green); }
+      .tag.gold { background: var(--gold); }
+      .tag.red { background: var(--red); }
 
       .flow {
         display: grid;
@@ -173,21 +147,10 @@
         font-size: 18px;
       }
 
-      .blue-bg {
-        background: var(--blue);
-      }
-
-      .green-bg {
-        background: var(--green);
-      }
-
-      .gold-bg {
-        background: var(--gold);
-      }
-
-      .red-bg {
-        background: var(--red);
-      }
+      .blue-bg { background: var(--blue); }
+      .green-bg { background: var(--green); }
+      .gold-bg { background: var(--gold); }
+      .red-bg { background: var(--red); }
 
       code {
         padding: 2px 6px;
@@ -226,10 +189,9 @@
   <body>
     <header>
       <p class="eyebrow">Documentation Snapshot</p>
-      <h1>공공직군 행정업무 슈퍼앱 기획 문서</h1>
+      <h1>Public Admin RPA Hub 문서</h1>
       <p class="lead">
-        팀 일정 공유, 엑셀 업무 자동화, 민원 대응 챗봇, 공공 행정 뉴스 수집을 하나의 내부 업무 지원 시스템으로
-        구성하기 위한 요구사항과 기술 구조, 운영 기준을 정리했다.
+        일정 관리, 엑셀 자동화, 정책 뉴스 수집, 그리고 민원 챗봇 확장용 구조를 갖춘 로컬 개발용 스캐폴드의 현재 상태를 요약한 문서다.
       </p>
     </header>
 
@@ -239,27 +201,27 @@
           <h2>핵심 기능</h2>
           <div class="flow">
             <div class="blue-bg">
-              <strong>스케줄</strong>
-              휴가, 근무, 출장, 교육 일정을 팀 단위 캘린더로 공유한다.
+              <strong>일정 관리</strong>
+              팀원 등록과 일정 CRUD, 주간 / 월간 캘린더 조회를 제공한다.
             </div>
             <div class="green-bg">
               <strong>엑셀 자동화</strong>
-              기준 컬럼 분리와 동일 헤더 병합으로 반복 작업을 줄인다.
+              첫 시트 헤더를 읽고 split / merge 작업을 수행한다.
             </div>
             <div class="gold-bg">
               <strong>민원 챗봇</strong>
-              첨부 매뉴얼 기반으로 대응 절차와 응대 스크립트 초안을 만든다.
+              현재는 프런트엔드 자리표시 화면이며 백엔드는 준비 단계다.
             </div>
             <div class="red-bg">
-              <strong>뉴스 수집</strong>
-              공공 행정 관련 뉴스를 매일 아침 수집하고 요약한다.
+              <strong>정책 뉴스</strong>
+              지정 날짜 기준으로 수집하고 목록과 다운로드 링크를 보여준다.
             </div>
           </div>
         </article>
 
         <aside class="card span-5">
           <h2>문서 바로가기</h2>
-          <p>상세 내용은 Markdown 문서에서 관리한다.</p>
+          <p>아래 문서는 현재 구현 기준으로 갱신되어 있다.</p>
           <div class="doc-links">
             <a href="./PRD.md">PRD.md</a>
             <a href="./Architecture.md">Architecture.md</a>
@@ -269,9 +231,9 @@
 
         <article class="card span-4">
           <h2>기술 스택</h2>
+          <span class="tag blue">React</span>
           <span class="tag blue">TypeScript</span>
           <span class="tag blue">Vite</span>
-          <span class="tag blue">React</span>
           <span class="tag green">Python</span>
           <span class="tag green">FastAPI</span>
           <span class="tag gold">uv</span>
@@ -281,38 +243,38 @@
         <article class="card span-4">
           <h2>MVP 범위</h2>
           <ul>
-            <li>팀 일정 CRUD와 캘린더 조회</li>
-            <li>엑셀 파일 분리, 병합, 다운로드</li>
-            <li>민원 매뉴얼 기반 응답 초안</li>
-            <li>공공 행정 뉴스 수집 결과 조회</li>
+            <li>팀원 CRUD와 일정 CRUD</li>
+            <li>엑셀 split / merge</li>
+            <li>정책 뉴스 수집과 조회</li>
+            <li>시스템 상태 확인</li>
           </ul>
         </article>
 
         <article class="card span-4">
-          <h2>운영 기준</h2>
+          <h2>현재 경계</h2>
           <ul>
-            <li>권한 기반 접근 제어</li>
-            <li>파일 업로드 검증</li>
-            <li>감사 로그 기록</li>
-            <li>개인정보 로그 저장 제한</li>
+            <li>인증 / 권한 없음</li>
+            <li>민원 챗봇 API 없음</li>
+            <li>감사 로그 UI 없음</li>
+            <li>배포 설정 없음</li>
           </ul>
         </article>
 
         <article class="card span-6">
-          <h2>권장 백엔드 구조</h2>
+          <h2>구조 개요</h2>
           <p>
-            FastAPI 앱은 <code>app/modules</code> 아래에 일정, 엑셀 작업, 민원, 뉴스, 감사 로그 모듈을 분리한다.
-            SQLite DB 파일은 <code>backend/data/app.sqlite3</code>에 두는 것을 기준으로 한다.
+            Frontend는 <code>frontend/src</code>의 화면 구성과 API 클라이언트를 담당하고, Backend는 <code>backend/app</code>의
+            모듈별 라우터와 SQLite 저장소를 담당한다. 데이터 파일은 <code>backend/data/app.sqlite3</code>에 생성된다.
           </p>
         </article>
 
         <article class="card span-6">
-          <h2>다음 구현 단계</h2>
+          <h2>실행 순서</h2>
           <ul>
-            <li>Vite React 진입 파일 생성</li>
-            <li>FastAPI 앱 진입점 생성</li>
-            <li>SQLite 연결 모듈 작성</li>
-            <li>일정 관리 MVP부터 API와 화면 구현</li>
+            <li>의존성 설치</li>
+            <li>백엔드 기동</li>
+            <li>프런트엔드 기동</li>
+            <li>헬스 체크 및 화면 확인</li>
           </ul>
         </article>
       </section>

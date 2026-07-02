@@ -49,6 +49,13 @@ h3 { margin-bottom: 0; font-size: 18px; }
   background: rgb(255 255 255 / 7%);
 }
 .nav-list span { color: #c8dadb; font-size: 13px; line-height: 1.45; }
+.nav-list a.active,
+.nav-list a[aria-current="page"] {
+  border-color: rgb(159 214 202 / 70%);
+  background: rgb(255 255 255 / 16%);
+}
+.nav-list a.active strong,
+.nav-list a[aria-current="page"] strong { color: #ffffff; }
 
 .workspace { display: grid; align-content: start; gap: 24px; padding: 32px; }
 .status-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
@@ -201,4 +208,46 @@ select {
   .wide-field { grid-column: auto; }
   .month-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .weekday { display: none; }
+}
+.excel-page { display: grid; gap: 20px; }
+.excel-form {
+  display: grid;
+  grid-template-columns: minmax(260px, 1fr) minmax(220px, 320px) 180px;
+  gap: 12px;
+  align-items: end;
+}
+.excel-form .panel-title-row,
+.excel-form .wide-field { grid-column: 1 / -1; }
+.excel-result-panel { display: grid; gap: 14px; }
+.excel-result {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 14px;
+  border: 1px solid #e2ebed;
+  border-radius: 8px;
+  background: #f8fbfb;
+}
+.excel-result div { display: grid; gap: 4px; }
+.excel-result span,
+.excel-result p,
+.excel-form .panel-title-row span,
+.excel-result-panel .panel-title-row span {
+  margin: 0;
+  color: #66777c;
+  font-size: 13px;
+}
+.download-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 42px;
+  padding: 0 14px;
+  text-decoration: none;
+}
+
+@media (max-width: 860px) {
+  .excel-form { grid-template-columns: 1fr; }
+  .excel-result { align-items: stretch; flex-direction: column; }
 }
