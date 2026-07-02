@@ -1,9 +1,14 @@
+import asyncio
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import settings
 from app.db.connection import init_db, ping_db
+from app.modules.news.router import router as news_router
+from app.modules.news.scheduler import run_daily_news_collector
 from app.modules.schedules.router import router as schedules_router
+from app.modules.team_members.router import router as team_members_router
 
 app = FastAPI(title=settings.app_name)
 
@@ -15,12 +20,16 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+app.include_router(team_members_router, prefix="/api")
 app.include_router(schedules_router, prefix="/api")
+app.include_router(news_router, prefix="/api")
 
 
 @app.on_event("startup")
-def on_startup() -> None:
+async def on_startup() -> None:
     init_db()
+    if not hasattr(app.state, "news_collector_task"):
+        app.state.news_collector_task = asyncio.create_task(run_daily_news_collector())
 
 
 @app.get("/api/health")
@@ -37,5 +46,5 @@ def system_status() -> dict[str, object]:
             "status": database_status,
             "path": str(settings.database_path),
         },
-        "features": ["schedules", "excel_jobs", "complaints", "news", "audit"],
+        "features": ["team_members", "schedules", "excel_jobs", "complaints", "news", "audit"],
     }

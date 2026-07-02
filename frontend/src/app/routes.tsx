@@ -7,7 +7,7 @@ export const routes = [
   {
     id: "schedule",
     label: "일정",
-    description: "팀 일정 CRUD와 승인 상태를 다룹니다.",
+    description: "팀원 등록과 주간/월간 일정을 관리합니다.",
     component: SchedulePage,
   },
   {
